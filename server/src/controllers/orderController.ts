@@ -4,12 +4,9 @@ import User from "../models/User";
 import { IUser } from "../models/User";
 import Product from "../models/Product";
 
-// Extend Express Request to include user
 interface AuthRequest extends Request {
   user?: IUser;
 }
-
-// Employee places a new order
 
 export const getAllOrders = async (req: AuthRequest, res: Response) => {
   try {
@@ -19,24 +16,29 @@ export const getAllOrders = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-export const placeOrder = async (req: AuthRequest, res: Response): Promise<void> => {
+export const placeOrder = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   try {
-    const {customer,productId} = req.body;
+    const { customer, productId } = req.body;
     const employeeUser = req.user;
-    
+
     if (!employeeUser || !employeeUser._id) {
-      res.status(401).json({ message: 'Unauthorized' });
+      res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    const employee = await User.findById(employeeUser._id).populate('managerId', 'name email');
+    const employee = await User.findById(employeeUser._id).populate(
+      "managerId",
+      "name email"
+    );
     const product = await Product.findById(productId);
 
     if (!product || !employee) {
-      res.status(404).json({ message: 'Product or Employee not found' });
+      res.status(404).json({ message: "Product or Employee not found" });
       return;
     }
-
 
     const newOrder = new Order({
       productId: product._id,
@@ -45,20 +47,20 @@ export const placeOrder = async (req: AuthRequest, res: Response): Promise<void>
       product: {
         name: product.name,
         price: product.price,
-        image: product.image
+        image: product.image,
       },
       employee: {
         name: employee.name,
-        email: employee.email
+        email: employee.email,
       },
       manager: employee.managerId
         ? {
             name: (employee.managerId as any).name,
-            email: (employee.managerId as any).email
+            email: (employee.managerId as any).email,
           }
         : undefined,
       customer,
-      status: 'Pending'
+      status: "Pending",
     });
 
     await newOrder.save();
@@ -69,13 +71,10 @@ export const placeOrder = async (req: AuthRequest, res: Response): Promise<void>
   }
 };
 
-// Manager views orders placed by their team members
 export const getTeamOrders = async (req: AuthRequest, res: Response) => {
   try {
-    const managerId = req.user?._id
+    const managerId = req.user?._id;
     const orders = await Order.find({ managerId: managerId });
-    console.log(orders)
-
     res.json(orders);
     return;
   } catch (error) {
@@ -87,7 +86,7 @@ export const getEmployeeOrders = async (req: AuthRequest, res: Response) => {
   try {
     const employeeId = req.user?._id;
 
-    const orders = await Order.find({ employeeId: employeeId })
+    const orders = await Order.find({ employeeId: employeeId });
 
     res.json(orders);
     return;

@@ -1,19 +1,15 @@
-import { Request, Response } from 'express';
-import mongoose from 'mongoose';
-import User, { IUser } from '../models/User';
-import generateToken from '../utils/generateToken';
-import { hashPassword, matchPassword } from '../utils/hashPassword';
-
-
-
-
+import { Request, Response } from "express";
+import mongoose from "mongoose";
+import User, { IUser } from "../models/User";
+import generateToken from "../utils/generateToken";
+import { hashPassword, matchPassword } from "../utils/hashPassword";
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, email, password, role, managerId } = req.body;
 
   const userExists = await User.findOne({ email });
-  if (userExists){
-    res.status(400).json({ message: 'User already exists' });
+  if (userExists) {
+    res.status(400).json({ message: "User already exists" });
     return;
   }
 
@@ -25,8 +21,6 @@ export const registerUser = async (req: Request, res: Response) => {
     role,
     managerId,
   });
-
-
 
   res.status(201).json({
     _id: user._id,
@@ -42,14 +36,14 @@ export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user){
-    res.status(401).json({ message: 'Invalid credentials' });
+  if (!user) {
+    res.status(401).json({ message: "Invalid credentials" });
     return;
   }
 
   const isMatch = await matchPassword(password, user.password);
-  if (!isMatch){
-    res.status(401).json({ message: 'Invalid credentials' });
+  if (!isMatch) {
+    res.status(401).json({ message: "Invalid credentials" });
     return;
   }
 

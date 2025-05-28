@@ -113,7 +113,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser?.role === "manager") {
-      await Order.updateMany(
+      await User.updateMany(
         { managerId: deletedUser?._id },
         { $unset: { managerId: "" } }
       );
