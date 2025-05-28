@@ -1,9 +1,6 @@
 import axios from "axios";
-// baseURL: import.meta.env.VITE_API_URL || 'http://192.168.25.186:5000/api',
-
 const api = axios.create({
-  baseURL: "http://192.168.25.186:5000/api",
-});
+baseURL: import.meta.env.VITE_API_URL,});
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
