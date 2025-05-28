@@ -30,13 +30,3 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     res.status(401).json({ message: 'Invalid token' });
   }
 };
-
-// export const authorizeRoles = (...roles: string[]) => {
-//   return (req: AuthRequest, res: Response, next: NextFunction) => {
-//     if (!roles.includes(req.user?.role!)) {
-//       res.status(403).json({ message: 'Forbidden' });
-//       return;
-//     }
-//     next();
-//   };
-// };

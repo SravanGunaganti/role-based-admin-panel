@@ -15,10 +15,29 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+
+export const createProducts = async (req: Request, res: Response) => {
+  try {
+    const products = req.body; // Expecting an array of product objects
+
+    if (!Array.isArray(products) || products.length === 0) {
+      res.status(400).json({ message: 'Request body must be a non-empty array of products.' });
+      return;
+    }
+
+    const insertedProducts = await Product.insertMany(products);
+
+    res.status(201).json(insertedProducts);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to insert products', error });
+  }
+};
+
+
 // Get all products
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find({isDeleted:false});
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch products', error });
@@ -58,10 +77,10 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
-// Delete product by ID
+
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    const deletedProduct = await Product.findByIdAndUpdate(req.params.id,{isDeleted:true},{ new: true, runValidators: true });
 
     if (!deletedProduct) res.status(404).json({ message: 'Product not found' });
 

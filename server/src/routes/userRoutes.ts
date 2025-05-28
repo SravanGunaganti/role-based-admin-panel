@@ -9,11 +9,6 @@ import {
 import { protect } from "../middleware/authMiddleware";
 import { authorizeRoles } from "../middleware/roleMiddleware";
 
-// const asyncHandler = (fn: Function) =>
-//     (req: Request, res: Response, next: NextFunction) => {
-//       Promise.resolve(fn(req, res, next)).catch(next);
-//   };
-
 const router = express.Router();
 
 router.post("/", protect, authorizeRoles("admin"), addUser);

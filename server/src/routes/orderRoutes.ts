@@ -16,19 +16,19 @@ router.post("/", protect, authorizeRoles("employee"), placeOrder);
 router.get("/", protect, authorizeRoles("admin"), getAllOrders);
 
 router.get(
-  "/:managerId/team-orders",
+  "/manager/team-orders",
   protect,
   authorizeRoles("manager"),
   getTeamOrders
 );
 router.get(
-  "/:employeeId/my-orders",
+  "/employee/my-orders",
   protect,
   authorizeRoles("employee"),
   getEmployeeOrders
 );
 
-router.put(
+router.patch(
   "/:orderId",
   protect,
   authorizeRoles("manager"),

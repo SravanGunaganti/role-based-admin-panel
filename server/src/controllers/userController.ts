@@ -1,13 +1,14 @@
-import { Request, Response } from 'express';
-import User from '../models/User';
-import { hashPassword } from '../utils/hashPassword';
+import { Request, Response } from "express";
+import User from "../models/User";
+import { hashPassword } from "../utils/hashPassword";
+import Order from "../models/Order";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find().select('-password');
+    const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -16,9 +17,9 @@ export const addUser = async (req: Request, res: Response) => {
 
   try {
     const userExists = await User.findOne({ email });
-    if (userExists){
-        res.status(400).json({ message: 'User already exists' });
-        return;
+    if (userExists) {
+      res.status(400).json({ message: "User already exists" });
+      return;
     }
 
     const hashedPwd = await hashPassword(password);
@@ -39,31 +40,28 @@ export const addUser = async (req: Request, res: Response) => {
       managerId: newUser.managerId,
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-
   const { id } = req.params;
-  console.log(id);
   const { name, email, password, role, managerId } = req.body;
 
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
       return;
     }
-     
 
-    // Update fields if they are provided
+    const originalManagerId = user.managerId;
+
     if (name) user.name = name;
     if (email) user.email = email;
     if (password) user.password = await hashPassword(password);
     if (role) user.role = role;
     if (managerId) user.managerId = managerId;
-    // if(role==="manager" && user.managerId) user.managerId=undefined;
 
     const updateFields: any = {};
     if (name) updateFields.name = user.name;
@@ -81,6 +79,23 @@ export const updateUser = async (req: Request, res: Response) => {
       updateFields,
       { new: true, runValidators: true }
     );
+    if (managerId && managerId.toString() !== originalManagerId?.toString()) {
+      const manager = await User.findById(managerId);
+      if (manager) {
+        await Order.updateMany(
+          { employeeId: id, status: "Pending" },
+          {
+            $set: {
+              managerId: manager?._id,
+              manager: {
+                name: manager?.name,
+                email: manager?.email,
+              },
+            },
+          }
+        );
+      }
+    }
 
     res.status(200).json({
       _id: updatedUser?._id,
@@ -90,32 +105,37 @@ export const updateUser = async (req: Request, res: Response) => {
       managerId: updatedUser?.managerId,
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (deletedUser?.role === "manager") {
+      await Order.updateMany(
+        { managerId: deletedUser?._id },
+        { $unset: { managerId: "" } }
+      );
+    }
 
-    if (!deletedUser) res.status(404).json({ message: 'User not found' });
+    if (!deletedUser) res.status(404).json({ message: "User not found" });
 
-    res.json({ message: 'User deleted successfully' });
+    res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to delete User', error });
+    res.status(500).json({ message: "Failed to delete User", error });
   }
 };
 
 export const getUsersByManager = async (req: Request, res: Response) => {
-
   const managerId = req.params.managerId;
-  console.log(managerId)
+  console.log(managerId);
   try {
-    const employees = await User.find({ managerId, role: 'employee' }).select('-password');
+    const employees = await User.find({ managerId, role: "employee" }).select(
+      "-password"
+    );
     res.json(employees);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
-
-
