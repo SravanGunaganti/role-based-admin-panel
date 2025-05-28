@@ -1,0 +1,168 @@
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import api from "../api/axios";
+
+import { useAuth } from "./AuthContext";
+
+export type OrderStatus = "Pending" | "Delivered" | "Cancelled";
+
+export interface IOrder {
+  _id: string;
+  customer: {
+    name: string;
+    email: string;
+    mobileNumber: string;
+    address: string;
+  };
+  employee: {
+    name: string;
+    email: string;
+  };
+  manager?: {
+    name: string;
+    email: string;
+  };
+  product: {
+    name: string;
+    price: string;
+    description: string;
+    image: string;
+  };
+  productId: string;
+  employeeId: string;
+  managerId?: string;
+  status: OrderStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+interface PreOrder {
+  _id?: string;
+  customer: {
+    name: string;
+    email: string;
+    mobileNumber?: string;
+    address?: string;
+  };
+
+  productId: string;
+}
+
+interface OrdersContextShape {
+  orders: IOrder[];
+  teamOrders: IOrder[];
+  employeeOrders: IOrder[];
+  updateOrderStatus: (id: string, status: string) => Promise<IOrder>;
+  addOrder: (order: PreOrder) => Promise<IOrder>;
+}
+
+const OrdersContext = createContext<OrdersContextShape>(
+  {} as OrdersContextShape
+);
+export const useOrders = () => useContext(OrdersContext);
+
+export const OrdersProvider = ({ children }: { children: ReactNode }) => {
+  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [teamOrders, setTeamOrders] = useState<IOrder[]>([]);
+  const [employeeOrders, setEmployeeOrders] = useState<IOrder[]>([]);
+  const { user } = useAuth();
+  const API_URL = "/orders";
+
+  const fetchOrders = async (): Promise<IOrder[]> => {
+    try {
+      const response = await api.get(API_URL);
+      setOrders(response.data);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || "Failed To fetch orders"
+      );
+    }
+  };
+
+  const fetchEmployeeOrders = async (): Promise<IOrder[]> => {
+    try {
+      const response = await api.get(`${API_URL}/employee/my-orders`);
+      setEmployeeOrders(response.data);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || "Failed To fetch orders"
+      );
+    }
+  };
+
+  const fetchTeamOrders = async (): Promise<IOrder[]> => {
+    try {
+      const response = await api.get(`${API_URL}/manager/team-orders`);
+      console.log(response.data);
+      setTeamOrders(response.data);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || "Failed To fetch orders"
+      );
+    }
+  };
+  useEffect(() => {
+    if (user?.role === "admin") {
+      fetchOrders();
+    } else if (user?.role === "employee") {
+      fetchEmployeeOrders();
+    } else if (user?.role === "manager") {
+      fetchTeamOrders();
+    }
+  }, [user]);
+
+  const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder> => {
+    try {
+      const response = await api.post(API_URL, order);
+      console.log(response.data);
+      const placedOrder = response.data;
+      console.log(placedOrder);
+      setEmployeeOrders((prev: IOrder[]) => [...prev, placedOrder]);
+      await fetchEmployeeOrders();
+      return placedOrder;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Failed To place order");
+    }
+  };
+
+  const updateOrderStatus = async (
+    id: string,
+    status: string
+  ): Promise<IOrder> => {
+    try {
+      const response = await api.patch(`${API_URL}/${id}`, { status });
+      const updatedOrder = response.data;
+      setTeamOrders((prev: any) =>
+        prev.map((o: IOrder) =>
+          o._id === updatedOrder._id ? { ...o, status: updatedOrder.status } : o
+        )
+      );
+      await fetchTeamOrders();
+      return updatedOrder;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || "Failed To update order status"
+      );
+    }
+  };
+
+  return (
+    <OrdersContext.Provider
+      value={{
+        orders,
+        teamOrders,
+        employeeOrders,
+        addOrder,
+        updateOrderStatus,
+      }}>
+      {children}
+    </OrdersContext.Provider>
+  );
+};

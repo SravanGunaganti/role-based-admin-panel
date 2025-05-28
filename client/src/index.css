@@ -1,1 +1,53 @@
 @import "tailwindcss";
+@font-face {
+  font-family: "Outfit-bold";
+  font-weight: 600;
+  src: url(../src/assets/outfit/fonts/Outfit-Bold.ttf);
+}
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../src/assets/outfit/fonts/Outfit-Regular.ttf);
+}
+
+@font-face {
+  font-family: "Outfit-md";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../src/assets/outfit/fonts/Outfit-Medium.ttf);
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@theme {
+  --font-self: "Outfit-md";
+  --font-outfitbold: "Outfit-bold";
+  --font-outfit: "Outfit";
+  --color-brand: #ecf3ff;
+}
+body {
+  font-family: var(--font-self), sans-serif;
+}
+
+input,
+textarea,
+select {
+  font-family: var(--font-outfit) !important;
+  color: var(--color-gray-600);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
