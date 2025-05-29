@@ -1,9 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import type { IProduct } from "../types";
 import { useProducts } from "../context/ProductContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProductsList() {
   const { products } = useProducts();
+  const {user} = useAuth();
   const navigate = useNavigate();
 
   const handlePlaceOrder = (product: IProduct) => {
@@ -37,18 +39,18 @@ export default function ProductsList() {
                 {product.description!}
               </p>
 
-              <div className="gap-3 grid grid-cols-2 mt-4">
+              <div className={`gap-3 ${user?.role==="employee"?"grid":"w-full"} grid-cols-2 mt-4`}>
                 <NavLink
                   key={"/"}
                   to={`/products/${product._id}`}
-                  className="text-blue-700 text-center bg-blue-50 border border-blue-200 px-3 py-1 rounded-md hover:bg-blue-100 transition">
+                  className={`${user?.role==="employee"?"null":"block"} text-blue-700 text-center bg-blue-50 border border-blue-200 px-3 py-1 rounded-md hover:bg-blue-100 transition`}>
                   View
                 </NavLink>
-                <button
+                {user?.role==="employee" &&<button
                   onClick={() => handlePlaceOrder(product)}
                   className="text-blue-700 text-center bg-blue-50 border border-blue-200 px-3 py-1 rounded-md hover:bg-blue-100 transition">
                   Order
-                </button>
+                </button>}
               </div>
             </li>
           ))}

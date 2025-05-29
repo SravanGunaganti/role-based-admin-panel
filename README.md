@@ -354,9 +354,8 @@ This is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) application t
 
 * Built using **Tailwind CSS**  
 * Responsive layouts supporting **mobile**, **tablet**, and **desktop**.  
-* Sidebar \+ Header navigation based on user role..
+* Sidebar \+ Header navigation based on user role..  
 * Toast notifications for failure operations and custom popup for success
-
 
 ---
 
@@ -372,6 +371,7 @@ This is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) application t
 
 **Add `.env`:**
 
+PORT=5000  
 MONGO\_URI=your\_mongo\_uri  
 JWT\_SECRET=your\_jwt\_secret
 
@@ -406,3 +406,20 @@ Add `.env` file with **VITE\_API\_URL=http://localhost:5000/api**
 
 **Frontend:** [https://changenetworks.netlify.app/](https://changenetworks.netlify.app/)  
 **Backend:** [https://role-based-admin-panel-t38v.onrender.com](https://role-based-admin-panel-t38v.onrender.com)
+
+---
+
+### **Sample Access Credentials**
+
+**Admin Access**  
+ Email: `admin@gmail.com`  
+ Password: `Admin@2025`
+
+**Manager Access**  
+ Email: `pearlkinny2025@gmail.com`  
+ Password: `Pearl@2025`
+
+**Employee Access**  
+ Email: `employee@gmail.com`  
+ Password: `Employee@2025`
+
