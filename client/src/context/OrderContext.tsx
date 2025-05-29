@@ -99,7 +99,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const fetchTeamOrders = async (): Promise<IOrder[]> => {
     try {
       const response = await api.get(`${API_URL}/manager/team-orders`);
-      console.log(response.data);
       setTeamOrders(response.data);
       return response.data;
     } catch (error: any) {
@@ -121,9 +120,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder> => {
     try {
       const response = await api.post(API_URL, order);
-      console.log(response.data);
       const placedOrder = response.data;
-      console.log(placedOrder);
       setEmployeeOrders((prev: IOrder[]) => [...prev, placedOrder]);
       await fetchEmployeeOrders();
       return placedOrder;

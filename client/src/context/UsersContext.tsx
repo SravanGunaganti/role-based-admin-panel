@@ -71,7 +71,6 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateUser = async (userData: IUser): Promise<IUser> => {
-    console.log(userData);
     try {
       if (user?.role !== "admin")
         throw new Error("Unauthorized: Only admin can update user");

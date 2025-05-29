@@ -48,7 +48,6 @@ const PlaceOrder = () => {
       },
       productId: product?._id,
     };
-    console.log(order);
 
     const data = await addOrder(order);
 

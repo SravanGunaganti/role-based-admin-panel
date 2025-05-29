@@ -129,7 +129,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const getUsersByManager = async (req: Request, res: Response) => {
   const managerId = req.params.managerId;
-  console.log(managerId);
   try {
     const employees = await User.find({ managerId, role: "employee" }).select(
       "-password"
