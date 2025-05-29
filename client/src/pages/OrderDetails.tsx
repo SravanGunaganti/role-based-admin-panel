@@ -22,7 +22,7 @@ const OrderDetails = () => {
     return <h1> Loading</h1>;
   }
   const updateOrder = async (id: string, status: string) => {
-    await updateOrderStatus(id, status);
+      await updateOrderStatus(id, status);
   };
 
   return (

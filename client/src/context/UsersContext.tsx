@@ -8,6 +8,7 @@ import {
 import api from "../api/axios";
 import type { IUser } from "../types";
 import { useAuth } from "./AuthContext";
+import { toast } from "react-toastify";
 
 interface UsersContextShape {
   users: IUser[];
@@ -32,7 +33,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
       const data = response.data;
       setUsers(data);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Failed To Fetch");
+      toast.error(error.response?.data?.message || "Failed To Fetch");
     }
   };
   useEffect(() => {
@@ -40,13 +41,12 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   useEffect(() => {
-    const fetchUsersByManager = async (managerId: string): Promise<IUser[]> => {
+    const fetchUsersByManager = async (managerId: string): Promise<void> => {
       try {
         const response = await api.get(`${API_URL}/manager/${managerId}`);
         setTeam(response.data);
-        return response.data;
       } catch (error: any) {
-        throw new Error(
+        toast.error(
           error.response?.data?.message || "Failed To fetch team"
         );
       }

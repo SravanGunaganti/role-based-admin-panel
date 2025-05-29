@@ -8,6 +8,7 @@ import {
 import api from "../api/axios";
 import type { IProduct } from "../types";
 import { useAuth } from "./AuthContext";
+import { toast } from "react-toastify";
 
 interface ProductContextShape {
   products: IProduct[];
@@ -30,13 +31,12 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const API_URL = "/products";
 
   useEffect(() => {
-    const getProducts = async (): Promise<IProduct[]> => {
+    const getProducts = async (): Promise<void> => {
       try {
         const response = await api.get<IProduct[]>(API_URL);
         setProducts(response.data);
-        return response.data;
       } catch (error: any) {
-        throw new Error(
+        toast.error(
           error.response?.data?.message || "Failed To fetch Products"
         );
       } finally {

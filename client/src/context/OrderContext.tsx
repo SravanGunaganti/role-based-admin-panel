@@ -8,6 +8,7 @@ import {
 import api from "../api/axios";
 
 import { useAuth } from "./AuthContext";
+import { toast } from "react-toastify";
 
 export type OrderStatus = "Pending" | "Delivered" | "Cancelled";
 
@@ -56,8 +57,8 @@ interface OrdersContextShape {
   orders: IOrder[];
   teamOrders: IOrder[];
   employeeOrders: IOrder[];
-  updateOrderStatus: (id: string, status: string) => Promise<IOrder>;
-  addOrder: (order: PreOrder) => Promise<IOrder>;
+  updateOrderStatus: (id: string, status: string) => Promise<void>;
+  addOrder: (order: PreOrder) => Promise<IOrder | null>;
 }
 
 const OrdersContext = createContext<OrdersContextShape>(
@@ -72,37 +73,34 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const API_URL = "/orders";
 
-  const fetchOrders = async (): Promise<IOrder[]> => {
+  const fetchOrders = async (): Promise<void> => {
     try {
       const response = await api.get(API_URL);
       setOrders(response.data);
-      return response.data;
     } catch (error: any) {
-      throw new Error(
+      toast.error(
         error.response?.data?.message || "Failed To fetch orders"
       );
     }
   };
 
-  const fetchEmployeeOrders = async (): Promise<IOrder[]> => {
+  const fetchEmployeeOrders = async (): Promise<void> => {
     try {
       const response = await api.get(`${API_URL}/employee/my-orders`);
       setEmployeeOrders(response.data);
-      return response.data;
     } catch (error: any) {
-      throw new Error(
+      toast.error(
         error.response?.data?.message || "Failed To fetch orders"
       );
     }
   };
 
-  const fetchTeamOrders = async (): Promise<IOrder[]> => {
+  const fetchTeamOrders = async (): Promise<void> => {
     try {
       const response = await api.get(`${API_URL}/manager/team-orders`);
       setTeamOrders(response.data);
-      return response.data;
     } catch (error: any) {
-      throw new Error(
+      toast.error(
         error.response?.data?.message || "Failed To fetch orders"
       );
     }
@@ -117,7 +115,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder> => {
+  const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder | null> => {
     try {
       const response = await api.post(API_URL, order);
       const placedOrder = response.data;
@@ -125,14 +123,15 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       await fetchEmployeeOrders();
       return placedOrder;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Failed To place order");
+      toast.error(error.response?.data?.message || "Failed To place order");
+      return null;
     }
   };
 
   const updateOrderStatus = async (
     id: string,
     status: string
-  ): Promise<IOrder> => {
+  ): Promise<void> => {
     try {
       const response = await api.patch(`${API_URL}/${id}`, { status });
       const updatedOrder = response.data;
@@ -142,9 +141,9 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         )
       );
       await fetchTeamOrders();
-      return updatedOrder;
+      toast.success(`Order ${status}`)
     } catch (error: any) {
-      throw new Error(
+      toast.error(
         error.response?.data?.message || "Failed To update order status"
       );
     }

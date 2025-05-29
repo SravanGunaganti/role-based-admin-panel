@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
+import { toast } from 'react-toastify';
+
+
 
 interface LoginForm {
   email: string;
@@ -27,8 +30,8 @@ const LoginPage: React.FC = () => {
     try {
       await login(data.email, data.password);
       navigate(`/${user?.role}`);
-    } catch {
-      alert("Login failed: invalid credentials");
+    } catch(e:any) {
+      toast.error(e?.message|| "Login failed Try again!")
     }
   };
 
@@ -61,14 +64,16 @@ const LoginPage: React.FC = () => {
           </label>
           <input
             type="password"
+            minLength={6}
             placeholder="Enter password"
             className="w-full bg-white border border-gray-300 rounded-lg p-2 outline-0"
             {...register("password", { required: "Password is required" })}
           />
-        </div>
-        {errors.password && (
+          {errors.password && (
           <p className="text-red-600 text-sm mb-4">{errors.password.message}</p>
         )}
+        </div>
+        
         <button
           disabled={isSubmitting}
           className="w-full mt-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 shadow-lg">

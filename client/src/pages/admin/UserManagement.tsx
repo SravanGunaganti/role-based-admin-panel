@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useUsers } from "../../context/UsersContext";
 import ConfirmBox from "../../components/ConfirmBox";
 import SuccessBox from "../../components/SuccessBox";
+import { toast } from "react-toastify";
 
 const ManageUsers: React.FC = () => {
   const [isAddingUser, setIsAddingUser] = useState<boolean>(false);
@@ -95,7 +96,7 @@ const ManageUsers: React.FC = () => {
       });
       setShowSuccess(true);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to create user");
+      toast.error(err?.message || "Failed to create/update user");
     } finally {
       setLoading(false);
     }
@@ -392,10 +393,10 @@ const ManageUsers: React.FC = () => {
         <SuccessBox
           message={
             isEditingUser
-              ? "Updated Successfully"
+              ? "User Updated Successfully"
               : deleteUserId
-                ? " Deleted Successfully"
-                : "Added Successfully"
+                ? "User Deleted Successfully"
+                : "User Added Successfully"
           }
           onClose={hideSuccess}
         />

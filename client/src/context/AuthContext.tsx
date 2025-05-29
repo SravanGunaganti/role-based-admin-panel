@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    try{
     const res = await api.post("/auth/login", { email, password });
     const { token: jwt, ...userObj } = res.data;
     setToken(jwt);
@@ -48,6 +49,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("token", jwt);
     localStorage.setItem("user", JSON.stringify(userObj));
     return userObj;
+    }catch(e:any){
+      throw new Error(
+        e.response?.data?.message || "Failed To fetch orders"
+      );
+    }
   };
 
   const logout = () => {

@@ -17,6 +17,8 @@ import EmployeeOrders from "./pages/employee/EmployeeOrders";
 import ProductDetails from "./pages/PrdoductDetails";
 import Orders from "./pages/admin/Orders";
 import OrderDetails from "./pages/OrderDetails";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,144 +39,147 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 };
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/admin/manage-team"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <AppLayout>
-                <ManageUsers />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/orders"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <AppLayout>
-                <Orders />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/team/manage-products"
-          element={
-            <ProtectedRoute roles={["admin", "manager"]}>
-              <AppLayout>
-                <ManageProducts />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute roles={["admin", "manager", "employee"]}>
-              <AppLayout>
-                <ProductsList />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/products/:id"
-          element={
-            <ProtectedRoute roles={["admin", "manager", "employee"]}>
-              <AppLayout>
-                <ProductDetails />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/orders/:id"
-          element={
-            <ProtectedRoute roles={["admin", "manager", "employee"]}>
-              <AppLayout>
-                <OrderDetails />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin/manage-team"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AppLayout>
+                  <ManageUsers />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AppLayout>
+                  <Orders />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/team/manage-products"
+            element={
+              <ProtectedRoute roles={["admin", "manager"]}>
+                <AppLayout>
+                  <ManageProducts />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute roles={["admin", "manager", "employee"]}>
+                <AppLayout>
+                  <ProductsList />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products/:id"
+            element={
+              <ProtectedRoute roles={["admin", "manager", "employee"]}>
+                <AppLayout>
+                  <ProductDetails />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders/:id"
+            element={
+              <ProtectedRoute roles={["admin", "manager", "employee"]}>
+                <AppLayout>
+                  <OrderDetails />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <AppLayout>
-                <AdminDashboard />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoute roles={["employee"]}>
-              <AppLayout>
-                <EmployeeDashboard />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employee/place-order"
-          element={
-            <ProtectedRoute roles={["employee"]}>
-              <AppLayout>
-                <PlaceOrder />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employee/orders"
-          element={
-            <ProtectedRoute roles={["employee"]}>
-              <AppLayout>
-                <EmployeeOrders />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager"
-          element={
-            <ProtectedRoute roles={["manager"]}>
-              <AppLayout>
-                <ManagerDashboard />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager/team"
-          element={
-            <ProtectedRoute roles={["manager"]}>
-              <AppLayout>
-                <ManagerTeam />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager/orders"
-          element={
-            <ProtectedRoute roles={["manager"]}>
-              <AppLayout>
-                <TeamOrders />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AppLayout>
+                  <AdminDashboard />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee"
+            element={
+              <ProtectedRoute roles={["employee"]}>
+                <AppLayout>
+                  <EmployeeDashboard />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee/place-order"
+            element={
+              <ProtectedRoute roles={["employee"]}>
+                <AppLayout>
+                  <PlaceOrder />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee/orders"
+            element={
+              <ProtectedRoute roles={["employee"]}>
+                <AppLayout>
+                  <EmployeeOrders />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager"
+            element={
+              <ProtectedRoute roles={["manager"]}>
+                <AppLayout>
+                  <ManagerDashboard />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/team"
+            element={
+              <ProtectedRoute roles={["manager"]}>
+                <AppLayout>
+                  <ManagerTeam />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/orders"
+            element={
+              <ProtectedRoute roles={["manager"]}>
+                <AppLayout>
+                  <TeamOrders />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+      <ToastContainer />
+    </>
   );
 }
 

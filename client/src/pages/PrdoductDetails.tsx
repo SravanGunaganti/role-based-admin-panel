@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { IProduct } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { useProducts } from "../context/ProductContext";
+import { toast } from "react-toastify";
 
 const ProductDetails = () => {
   const { user } = useAuth();
@@ -13,8 +14,12 @@ const ProductDetails = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const data = await getProductById(id!);
-      setProduct(data);
+      try {
+        const data = await getProductById(id!);
+        setProduct(data);
+      } catch (e: any) {
+        toast.error(e.message || "Failed to fetch product");
+      }
     };
     fetchProduct();
   }, [id]);

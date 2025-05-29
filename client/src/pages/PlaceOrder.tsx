@@ -3,6 +3,7 @@ import { useOrders } from "../context/OrderContext";
 import { useForm } from "react-hook-form";
 import SuccessBox from "../components/SuccessBox";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export type OrderStatus = "Pending" | "Delivered" | "Cancelled";
 
@@ -51,9 +52,10 @@ const PlaceOrder = () => {
 
     const data = await addOrder(order);
 
-    if (data) {
+    if (data!) {
+      // toast.success('Order Placed Successfully');
       setShowSuccess(true);
-    } else alert("❌ Failed to place order.");
+    } else toast.error("❌ Failed to place order.");
   };
 
   const hideSuccess = () => {
