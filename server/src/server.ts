@@ -11,7 +11,7 @@ import orderRoutes from "./routes/orderRoutes";
 dotenv.config();
 const app = express();
 app.use(cors({
-    origin: ["https://changenetworks.netlify.app/","https://changenetworks.netlify.app"],
+    origin: ["https://changenetworks.netlify.app/","https://changenetworks.netlify.app","https://role-based-admin-panel-green.vercel.app"],
     credentials: true,
   }));
 app.use(express.json());
