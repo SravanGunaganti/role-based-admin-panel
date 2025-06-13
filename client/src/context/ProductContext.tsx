@@ -27,7 +27,7 @@ export const useProducts = () => useContext(ProductContext);
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user,authChecked } = useAuth();
   const API_URL = "/products";
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     getProducts();
-  }, []);
+  }, [user,authChecked]);
 
   const getProductById = async (id: string): Promise<IProduct> => {
     try {

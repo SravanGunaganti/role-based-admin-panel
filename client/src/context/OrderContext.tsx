@@ -70,7 +70,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [teamOrders, setTeamOrders] = useState<IOrder[]>([]);
   const [employeeOrders, setEmployeeOrders] = useState<IOrder[]>([]);
-  const { user,authChecked } = useAuth();
+  const { user, authChecked } = useAuth();
   const API_URL = "/orders";
 
   const fetchOrders = async (): Promise<void> => {
@@ -78,9 +78,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.get(API_URL);
       setOrders(response.data);
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Failed To fetch orders"
-      );
+      toast.error(error.response?.data?.message || "Failed To fetch orders");
     }
   };
 
@@ -89,9 +87,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.get(`${API_URL}/employee/my-orders`);
       setEmployeeOrders(response.data);
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Failed To fetch orders"
-      );
+      toast.error(error.response?.data?.message || "Failed To fetch orders");
     }
   };
 
@@ -100,24 +96,28 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.get(`${API_URL}/manager/team-orders`);
       setTeamOrders(response.data);
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Failed To fetch orders"
-      );
+      toast.error(error.response?.data?.message || "Failed To fetch orders");
     }
   };
   useEffect(() => {
-    if(!authChecked) return;
+    if (!authChecked || !user) return;
 
-    if (user?.role === "admin") {
-      fetchOrders();
-    } else if (user?.role === "employee") {
-      fetchEmployeeOrders();
-    } else if (user?.role === "manager") {
-      fetchTeamOrders();
-    }
-  }, [authChecked,user]);
+    const load = async () => {
+      if (user.role === "admin") {
+        await fetchOrders();
+      } else if (user.role === "employee") {
+        await fetchEmployeeOrders();
+      } else if (user.role === "manager") {
+        await fetchTeamOrders();
+      }
+    };
 
-  const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder | null> => {
+    load();
+  }, [authChecked, user]);
+
+  const addOrder = async (
+    order: Omit<PreOrder, "id">
+  ): Promise<IOrder | null> => {
     try {
       const response = await api.post(API_URL, order);
       const placedOrder = response.data;
@@ -143,7 +143,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         )
       );
       await fetchTeamOrders();
-      toast.success(`Order ${status}`)
+      toast.success(`Order ${status}`);
     } catch (error: any) {
       toast.error(
         error.response?.data?.message || "Failed To update order status"

@@ -15,7 +15,7 @@ interface AuthContextShape {
   logout: () => void;
   hideLabels: boolean;
   handleLabels: (value: boolean) => void;
-  verify:()=>Promise<void>;
+  verify: () => Promise<void>;
   authChecked: boolean;
 }
 
@@ -27,34 +27,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hideLabels, setHideLabels] = useState(false);
-  const [authChecked, setAuthChecked]= useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const handleLabels = (value: boolean) => {
     setHideLabels(value);
   };
 
   useEffect(() => {
+    const authVerification=async()=>{
     const t = localStorage.getItem("token");
     if (t) {
-      verify();
+      await verify();
       setToken(t);
-    }else{
+    } else {
       logout();
     }
     setLoading(false);
+  }
+  authVerification()
   }, []);
 
   const login = async (email: string, password: string) => {
-    try{
-    const res = await api.post("/auth/login", { email, password });
-    const { token: jwt, ...userObj } = res.data;
-    setToken(jwt);
-    setUser(userObj as IUser);
-    localStorage.setItem("token", jwt);
-    return userObj;
-    }catch(e:any){
-      throw new Error(
-        e.response?.data?.message || "Failed To Login"
-      );
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      const { token: jwt, ...userObj } = res.data;
+      setToken(jwt);
+      setUser(userObj as IUser);
+      setAuthChecked(true);
+      localStorage.setItem("token", jwt);
+      return userObj;
+    } catch (e: any) {
+      throw new Error(e.response?.data?.message || "Failed To Login");
     }
   };
 
@@ -64,21 +66,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.clear();
   };
 
-  const verify =async()=>{
+  const verify = async () => {
     try {
       const res = await api.get("/auth/verify");
-      const {name,email,role} = res.data.user;
-      setUser({name,email,role} as IUser);
+      const { name, email, role } = res.data.user;
+      setUser({ name, email, role } as IUser);
       setAuthChecked(true);
-      console.log(res.data.user);
       return res.data;
-    } catch (error:any) {
+    } catch (error: any) {
       logout();
       setAuthChecked(false);
       console.error(error.response?.data?.message);
     }
-
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         hideLabels,
         handleLabels,
         verify,
-        authChecked     
+        authChecked,
       }}>
       {children}
     </AuthContext.Provider>

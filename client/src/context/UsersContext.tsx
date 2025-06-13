@@ -22,7 +22,7 @@ const UsersContext = createContext<UsersContextShape>({} as UsersContextShape);
 export const useUsers = () => useContext(UsersContext);
 
 export const UsersProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user,authChecked } = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
   const [team, setTeam] = useState<IUser[]>([]);
   const API_URL = "/users";
@@ -38,7 +38,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
   };
   useEffect(() => {
     if (user?.role === "admin") fetchUsers();
-  }, [user]);
+  }, [user,authChecked]);
 
   useEffect(() => {
     const fetchUsersByManager = async (managerId: string): Promise<void> => {
@@ -54,7 +54,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
     if (user?.role === "manager") {
       fetchUsersByManager(user._id!);
     }
-  }, [user]);
+  }, [user,authChecked]);
 
   const addUser = async (userData: IUser): Promise<IUser> => {
     if (user?.role !== "admin")
