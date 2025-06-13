@@ -7,7 +7,6 @@ import {
 } from "react";
 import api from "../api/axios";
 import type { IUser } from "../types";
-
 interface AuthContextShape {
   user: IUser | null;
   token: string | null;
@@ -16,6 +15,8 @@ interface AuthContextShape {
   logout: () => void;
   hideLabels: boolean;
   handleLabels: (value: boolean) => void;
+  verify:()=>Promise<void>;
+  authChecked: boolean;
 }
 
 const AuthContext = createContext<AuthContextShape>({} as AuthContextShape);
@@ -26,16 +27,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hideLabels, setHideLabels] = useState(false);
+  const [authChecked, setAuthChecked]= useState(false);
   const handleLabels = (value: boolean) => {
     setHideLabels(value);
   };
 
   useEffect(() => {
     const t = localStorage.getItem("token");
-    const u = localStorage.getItem("user");
-    if (t && u) {
+    if (t) {
+      verify();
       setToken(t);
-      setUser(JSON.parse(u));
+    }else{
+      logout();
     }
     setLoading(false);
   }, []);
@@ -47,11 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(jwt);
     setUser(userObj as IUser);
     localStorage.setItem("token", jwt);
-    localStorage.setItem("user", JSON.stringify(userObj));
     return userObj;
     }catch(e:any){
       throw new Error(
-        e.response?.data?.message || "Failed To fetch orders"
+        e.response?.data?.message || "Failed To Login"
       );
     }
   };
@@ -61,6 +63,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.clear();
   };
+
+  const verify =async()=>{
+    try {
+      const res = await api.get("/auth/verify");
+      const {name,email,role} = res.data.user;
+      setUser({name,email,role} as IUser);
+      setAuthChecked(true);
+      console.log(res.data.user);
+      return res.data;
+    } catch (error:any) {
+      logout();
+      setAuthChecked(false);
+      console.error(error.response?.data?.message);
+    }
+
+  }
 
   return (
     <AuthContext.Provider
@@ -72,6 +90,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         hideLabels,
         handleLabels,
+        verify,
+        authChecked     
       }}>
       {children}
     </AuthContext.Provider>

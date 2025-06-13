@@ -82,7 +82,7 @@ const ManageUsers: React.FC = () => {
         if (newUser.role === "manager") {
           newUser.managerId = undefined;
         }
-        updateUser(newUser);
+        await updateUser(newUser);
       } else {
         await addUser(newUser);
       }
@@ -96,16 +96,20 @@ const ManageUsers: React.FC = () => {
       });
       setShowSuccess(true);
     } catch (err: any) {
-      toast.error(err?.message || "Failed to create/update user");
+      toast.error("Failed to create/update user");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAssignManager = async (employee: IUser, managerId: string) => {
+    try{
     setIsEditingUser(true);
     await updateUser({ ...employee, managerId });
     setShowSuccess(true);
+    }catch(error){
+      toast.error("Assign Manager Failed");
+    }
   };
 
   const handleDelete = (id: any) => {
@@ -114,11 +118,19 @@ const ManageUsers: React.FC = () => {
   };
 
   const confirmDelete = async () => {
-    if (deleteUserId) {
-      deleteUser(deleteUserId);
+    try {
+      if (deleteUserId) {
+        await deleteUser(deleteUserId);
+      }
+      setShowConfirm(false);
+      setShowSuccess(true);
+      
+    } catch (error:any) {
+      setShowConfirm(false);
+      toast.error(error.message);
     }
-    setShowConfirm(false);
-    setShowSuccess(true);
+   
+    
   };
 
   const cancelDelete = () => {

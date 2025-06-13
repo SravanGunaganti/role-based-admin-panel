@@ -81,7 +81,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
       );
       return updatedUser;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Add user failed");
+      throw new Error(error.response?.data?.message || "Update user failed");
     }
   };
 
@@ -103,7 +103,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
 
       return;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Add user failed");
+      throw new Error(error.response?.data?.message==="Invalid token"?"delete user failed":error.response?.data?.message);
     }
   };
 

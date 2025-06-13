@@ -70,7 +70,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [teamOrders, setTeamOrders] = useState<IOrder[]>([]);
   const [employeeOrders, setEmployeeOrders] = useState<IOrder[]>([]);
-  const { user } = useAuth();
+  const { user,authChecked } = useAuth();
   const API_URL = "/orders";
 
   const fetchOrders = async (): Promise<void> => {
@@ -106,6 +106,8 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   useEffect(() => {
+    if(!authChecked) return;
+
     if (user?.role === "admin") {
       fetchOrders();
     } else if (user?.role === "employee") {
@@ -113,7 +115,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     } else if (user?.role === "manager") {
       fetchTeamOrders();
     }
-  }, [user]);
+  }, [authChecked,user]);
 
   const addOrder = async (order: Omit<PreOrder, "id">): Promise<IOrder | null> => {
     try {
