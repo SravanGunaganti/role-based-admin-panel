@@ -62,7 +62,6 @@ const userUpdateSchema = Joi.object({
 
 export const addUser = async (req: Request, res: Response) => {
   try {
-    // Validate request body
     const { error } = userSchema.validate(req.body);
     if (error) {
       res.status(400).json({ message: error.details[0].message });
@@ -72,7 +71,7 @@ export const addUser = async (req: Request, res: Response) => {
     const { name, email, password, role, managerId } = req.body;
 
     const userExists = await User.findOne({ email });
-    if (userExists) {
+    if (userExists){
       res.status(400).json({ message: "User already exists" });
       return;
     }
