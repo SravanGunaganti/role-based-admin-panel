@@ -43,7 +43,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     };
-    getProducts();
+    if(user) getProducts();
   }, [user,authChecked]);
 
   const getProductById = async (id: string): Promise<IProduct> => {

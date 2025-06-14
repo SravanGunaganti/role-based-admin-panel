@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { IUser } from "../../types";
+import type { IUser} from "../../types";
 import { FaPlus } from "react-icons/fa";
 import { useUsers } from "../../context/UsersContext";
 import ConfirmBox from "../../components/ConfirmBox";
@@ -70,6 +70,7 @@ const ManageUsers: React.FC = () => {
       role: "employee",
       managerId: undefined,
     });
+    setIsEditingUser(false);
     setError(null);
   };
 

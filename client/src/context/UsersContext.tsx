@@ -22,7 +22,7 @@ const UsersContext = createContext<UsersContextShape>({} as UsersContextShape);
 export const useUsers = () => useContext(UsersContext);
 
 export const UsersProvider = ({ children }: { children: ReactNode }) => {
-  const { user,authChecked } = useAuth();
+  const { user, authChecked } = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
   const [team, setTeam] = useState<IUser[]>([]);
   const API_URL = "/users";
@@ -38,7 +38,7 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
   };
   useEffect(() => {
     if (user?.role === "admin") fetchUsers();
-  }, [user,authChecked]);
+  }, [user, authChecked]);
 
   useEffect(() => {
     const fetchUsersByManager = async (managerId: string): Promise<void> => {
@@ -46,15 +46,13 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
         const response = await api.get(`${API_URL}/manager/${managerId}`);
         setTeam(response.data);
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.message || "Failed To fetch team"
-        );
+        toast.error(error.response?.data?.message || "Failed To fetch team");
       }
     };
     if (user?.role === "manager") {
       fetchUsersByManager(user._id!);
     }
-  }, [user,authChecked]);
+  }, [user, authChecked]);
 
   const addUser = async (userData: IUser): Promise<IUser> => {
     if (user?.role !== "admin")
@@ -72,9 +70,17 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
 
   const updateUser = async (userData: IUser): Promise<IUser> => {
     try {
+      const { _id, name, email, password, role, managerId } = userData;
       if (user?.role !== "admin")
         throw new Error("Unauthorized: Only admin can update user");
-      const response = await api.put(`${API_URL}/${userData._id}`, userData);
+      const payload: any = {
+        name,
+        email,
+        role,
+        managerId,
+        ...(password && { password }),
+      };
+      const response = await api.put(`${API_URL}/${_id}`, payload);
       const updatedUser = response.data;
       setUsers((prev) =>
         prev.map((u) => (u._id === updatedUser._id ? updatedUser : u))
@@ -103,7 +109,11 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
 
       return;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message==="Invalid token"?"delete user failed":error.response?.data?.message);
+      throw new Error(
+        error.response?.data?.message === "Invalid token"
+          ? "delete user failed"
+          : error.response?.data?.message
+      );
     }
   };
 
